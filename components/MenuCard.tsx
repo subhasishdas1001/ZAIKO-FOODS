@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 import { Heart, Plus, Check } from "lucide-react";
@@ -7,12 +7,13 @@ import { motion } from "framer-motion";
 import type { MenuItem } from "@/lib/menuData";
 
 export default function MenuCard({ item }: { item: MenuItem }) {
+  const router = useRouter();
   const [fav, setFav] = useState(false);
   const [added, setAdded] = useState(false);
 
-  const handleAdd = () => {
+const handleAdd = () => {
     setAdded(true);
-    setTimeout(() => setAdded(false), 1600);
+    router.push(`/order?addItem=${item.id}`);
   };
 
   return (

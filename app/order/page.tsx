@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import PageHero from "@/components/PageHero";
@@ -10,6 +11,17 @@ import { menuCategories } from "@/lib/menuData";
 
 export default function OrderPage() {
   const [cart, setCart] = useState<Record<string, number>>({});
+const searchParams = useSearchParams();
+  const addItemId = searchParams.get("addItem");
+
+  useEffect(() => {
+    if (addItemId) {
+      setCart((prev) => ({
+        ...prev,
+        [addItemId]: (prev[addItemId] || 0) + 1,
+      }));
+    }
+  }, [addItemId]);
 
   const allItems = useMemo(() => menuCategories.flatMap((c) => c.items), []);
 
