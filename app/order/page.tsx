@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 import { useMemo, useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -9,9 +9,9 @@ import SectionDivider from "@/components/SectionDivider";
 import Reveal from "@/components/Reveal";
 import { menuCategories } from "@/lib/menuData";
 
-export default function OrderPage() {
+function OrderContent() {
   const [cart, setCart] = useState<Record<string, number>>({});
-const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const addItemId = searchParams.get("addItem");
 
   useEffect(() => {
@@ -34,75 +34,48 @@ const searchParams = useSearchParams();
   };
 
   const total = allItems.reduce((sum, item) => sum + (cart[item.id] || 0) * item.price, 0);
-
   const itemCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
-const [customerName, setCustomerName] = useState("");
-const [customerPhone, setCustomerPhone] = useState("");
-const [customerLocation, setCustomerLocation] = useState("");
-const [customerAddress, setCustomerAddress] = useState("");
-const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
-const [specialInstructions, setSpecialInstructions] = useState("");
-const handleCheckout = () => {
-  if (!customerName.trim()) {
-    alert("Please enter your name.");
-    return;
-  }
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerLocation, setCustomerLocation] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [specialInstructions, setSpecialInstructions] = useState("");
 
-  if (!customerPhone.trim()) {
-    alert("Please enter your mobile number.");
-    return;
-  }
+  const handleCheckout = () => {
+    if (!customerName.trim()) { alert("Please enter your name."); return; }
+    if (!customerPhone.trim()) { alert("Please enter your mobile number."); return; }
+    if (!/^[0-9]{10}$/.test(customerPhone.trim())) { alert("Please enter a valid 10-digit mobile number."); return; }
+    if (!customerLocation.trim()) { alert("Please enter your delivery location."); return; }
+    if (!customerAddress.trim()) { alert("Please enter your full delivery address."); return; }
 
-  if (!/^[0-9]{10}$/.test(customerPhone.trim())) {
-    alert("Please enter a valid 10-digit mobile number.");
-    return;
-  }
+    window.open(`https://wa.me/8670479101?text=${checkoutMessage}`, "_blank");
+  };
 
-  if (!customerLocation.trim()) {
-    alert("Please enter your delivery location.");
-    return;
-  }
+  const orderDate = new Date().toLocaleDateString("en-IN");
+  const orderTime = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+  const orderId = `ZK-${Date.now()}`;
 
-  if (!customerAddress.trim()) {
-    alert("Please enter your full delivery address.");
-    return;
-  }
-
-  window.open(
-    `https://wa.me/8670479101?text=${checkoutMessage}`,
-    "_blank"
-  );
-};
-const orderDate = new Date().toLocaleDateString("en-IN");
-const orderTime = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
-const orderId = `ZK-${Date.now()}`;
- const checkoutMessage = encodeURIComponent(`
+  const checkoutMessage = encodeURIComponent(`
 ━━━━━━━━━━━━━━━━━━
-
  Date: ${orderDate}
  Time: ${orderTime}
  Order ID: ${orderId}
-
 ━━━━━━━━━━━━━━━━━━
 ZAIKO NEW ORDER
 ━━━━━━━━━━━━━━━━━━
 
 CUSTOMER DETAILS
-
 Name: ${customerName || "Not provided"}
 Mobile: ${customerPhone || "Not provided"}
 Location: ${customerLocation || "Not provided"}
 Address: ${customerAddress || "Not provided"}
 
 ORDER DETAILS
-
 ${allItems
   .filter((item) => (cart[item.id] || 0) > 0)
-  .map(
-    (item) =>
-      `• ${item.name} × ${cart[item.id]} — ₹${(cart[item.id] || 0) * item.price}`
-  )
+  .map((item) => `• ${item.name} × ${cart[item.id]} — ₹${(cart[item.id] || 0) * item.price}`)
   .join("\n")}
 
 ━━━━━━━━━━━━━━━━━━━━
@@ -110,12 +83,10 @@ TOTAL: ₹${total}
 ━━━━━━━━━━━━━━━━━━━━
 
 Payment: ${paymentMethod}
-
 Special Instructions:
 ${specialInstructions || "None"}
 
-Thank you for ordering from Zaiko!`
-);
+Thank you for ordering from Zaiko!`);
 
   return (
     <>
@@ -187,107 +158,85 @@ Thank you for ordering from Zaiko!`
                     ))}
                 </div>
               )}
-              
+
               <div className="flex justify-between items-center pt-4 border-t border-white/10">
                 <span className="font-label text-ivory/70">Total</span>
                 <span className="font-display text-xl text-gold font-bold">₹{total}</span>
               </div>
+
               <div className="mt-6 pt-5 border-t border-white/10">
-  <h4 className="font-display text-lg text-ivory mb-4">
-    Customer Details
-  </h4>
+                <h4 className="font-display text-lg text-ivory mb-4">Customer Details</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Customer Name *</label>
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Mobile Number *</label>
+                    <input
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="10-digit mobile number"
+                      maxLength={10}
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Delivery Location *</label>
+                    <input
+                      type="text"
+                      value={customerLocation}
+                      onChange={(e) => setCustomerLocation(e.target.value)}
+                      placeholder="Area / Locality"
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Full Address *</label>
+                    <textarea
+                      value={customerAddress}
+                      onChange={(e) => setCustomerAddress(e.target.value)}
+                      placeholder="House no., street, landmark..."
+                      rows={3}
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Payment Method</label>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory outline-none focus:border-gold"
+                    >
+                      <option value="Cash on Delivery">Cash on Delivery</option>
+                      <option value="UPI">UPI</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-ivory/70 text-sm mb-1">Special Instructions</label>
+                    <textarea
+                      value={specialInstructions}
+                      onChange={(e) => setSpecialInstructions(e.target.value)}
+                      placeholder="Any special request? (Optional)"
+                      rows={2}
+                      className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
 
-  <div className="space-y-3">
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Customer Name *
-      </label>
-      <input
-        type="text"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        placeholder="Enter your name"
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
-      />
-    </div>
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Mobile Number *
-      </label>
-      <input
-        type="tel"
-        value={customerPhone}
-        onChange={(e) => setCustomerPhone(e.target.value)}
-        placeholder="10-digit mobile number"
-        maxLength={10}
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
-      />
-    </div>
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Delivery Location *
-      </label>
-      <input
-        type="text"
-        value={customerLocation}
-        onChange={(e) => setCustomerLocation(e.target.value)}
-        placeholder="Area / Locality"
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold"
-      />
-    </div>
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Full Address *
-      </label>
-      <textarea
-        value={customerAddress}
-        onChange={(e) => setCustomerAddress(e.target.value)}
-        placeholder="House no., street, landmark..."
-        rows={3}
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold resize-none"
-      />
-    </div>
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Payment Method
-      </label>
-      <select
-        value={paymentMethod}
-        onChange={(e) => setPaymentMethod(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory outline-none focus:border-gold"
-      >
-        <option value="Cash on Delivery">Cash on Delivery</option>
-        <option value="UPI">UPI</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-ivory/70 text-sm mb-1">
-        Special Instructions
-      </label>
-      <textarea
-        value={specialInstructions}
-        onChange={(e) => setSpecialInstructions(e.target.value)}
-        placeholder="Any special request? (Optional)"
-        rows={2}
-        className="w-full px-4 py-3 rounded-xl bg-ink border border-white/10 text-ivory placeholder:text-ivory/30 outline-none focus:border-gold resize-none"
-      />
-    </div>
-
-  </div>
-</div>
               <a
                 onClick={(e) => {
-  e.preventDefault();
-  if (itemCount > 0) {
-    handleCheckout();
-  }
-}}
+                  e.preventDefault();
+                  if (itemCount > 0) { handleCheckout(); }
+                }}
                 target="_blank"
                 rel="noreferrer"
                 aria-disabled={itemCount === 0}
@@ -299,11 +248,18 @@ Thank you for ordering from Zaiko!`
               >
                 Checkout on WhatsApp
               </a>
-          
             </div>
           </Reveal>
         </div>
       </section>
     </>
+  );
+}
+
+export default function OrderPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-ink text-ivory flex items-center justify-center">Loading...</div>}>
+      <OrderContent />
+    </Suspense>
   );
 }
