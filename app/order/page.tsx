@@ -1,6 +1,6 @@
 "use client";
-
-import { useMemo, useState, useEffect } from "react";
+export const dynamic = "force-dynamic";
+import { useMemo, useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
