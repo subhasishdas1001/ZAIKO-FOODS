@@ -27,21 +27,60 @@ const cormorant = Cormorant({
 });
 
 export const metadata: Metadata = {
- title: "Zaiko | Crafted Fresh. Remembered Forever.",
+  metadataBase: new URL("https://zaiko-foods.vercel.app"), // अपनी असली डोमेन यहाँ बदल सकते हैं
+  title: {
+    default: "Zaiko | Crafted Fresh. Remembered Forever.",
+    template: "%s | Zaiko Foods",
+  },
   description:
-    "Zaiko Foods — a modern premium fast-food brand...",
+    "Zaiko Foods — a modern premium fast-food destination serving handcrafted burgers, momos, rolls, fries and refreshing drinks with unforgettable taste.",
   keywords: [
+    "Zaiko",
     "Zaiko Foods",
+    "Zaiko Restaurant",
     "premium foods",
     "momos",
     "burgers",
     "rolls",
     "fast food delivery",
+    "order food online",
   ],
+  authors: [{ name: "Zaiko Foods" }],
+  creator: "Zaiko Foods",
+  publisher: "Zaiko Foods",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Zaiko | Crafted Fresh. Remembered Forever.",
-    description: "Zaiko is a premium fast-food destination serving handcrafted burgers, momos, rolls, fries and refreshing drinks with unforgettable taste.",
+    description:
+      "Zaiko is a premium fast-food destination serving handcrafted burgers, momos, rolls, fries and refreshing drinks with unforgettable taste.",
+    url: "https://zaiko-foods.vercel.app",
+    siteName: "Zaiko Foods",
+    locale: "en_IN",
     type: "website",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=1200",
+        width: 1200,
+        height: 630,
+        alt: "Zaiko Foods Premium Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zaiko | Crafted Fresh. Remembered Forever.",
+    description:
+      "Zaiko is a premium fast-food destination serving handcrafted burgers, momos, rolls and fries.",
+    images: ["https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=1200"],
   },
 };
 
